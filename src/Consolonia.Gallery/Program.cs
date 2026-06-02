@@ -14,6 +14,11 @@ namespace Consolonia.Gallery
         [STAThread]
         private static void Main(string[] args)
         {
+            if (args is [.., "--debug"])
+            {
+                while (!Debugger.IsAttached) Thread.Sleep(100);
+                Debugger.Break();
+            }
             TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
             {
                 if (Debugger.IsAttached) Debugger.Break();
@@ -36,6 +41,7 @@ namespace Consolonia.Gallery
                 .UseConsoloniaStorage()
                 .UseConsolonia()
                 .UseAutoDetectedConsole()
+                // .UseCursorialConsole();
                 .WithConsoleFonts()
                 .ThrowOnErrors()
                 .WithDeveloperTools();

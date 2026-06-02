@@ -10,6 +10,7 @@ using Consolonia.Core.Dummy;
 using Consolonia.Core.Infrastructure;
 using Consolonia.PlatformSupport;
 using Consolonia.PlatformSupport.Clipboard;
+using Consolonia.PlatformSupports;
 using jinek.X11;
 using X11Clipboard = Consolonia.PlatformSupport.Clipboard.X11Clipboard;
 
@@ -28,17 +29,7 @@ namespace Consolonia
                 // in design mode we can't use any console operations at all, so we use a dummy IConsole.
                 return builder.UseConsole(new DummyConsole());
 
-            IConsole console = Environment.OSVersion.Platform switch
-            {
-#pragma warning disable CA1416 // Validate platform compatibility
-                PlatformID.Win32S or PlatformID.Win32Windows or PlatformID.Win32NT =>
-                    new Win32Console(Console.IsOutputRedirected || IsWindowsTerminal()
-                        ? new AnsiConsoleOutput()
-                        : new WindowsLegacyConsoleOutput()),
-#pragma warning restore CA1416 // Validate platform compatibility
-                PlatformID.Unix or PlatformID.MacOSX => new CursesConsole(),
-                _ => new DefaultNetConsole()
-            };
+            IConsole console = CursorialConsole.CreateAsync().GetAwaiter().GetResult();
 
             return builder.UseConsole(console)
                 .UseAutoDetectClipboard()
@@ -193,6 +184,29 @@ namespace Consolonia
                 }
 
             return builder.UseConsoleColorMode(result);
+        }
+
+        /// <summary>
+        /// Configure Consolonia to use the Cursorial terminal library for I/O instead of
+        /// libcurses. Cursorial handles terminal-mode management, capability negotiation, mouse
+        /// encoding, focus events, and bracketed paste natively in .NET without native library
+        /// dependencies. Call this after <c>.UseConsolonia()</c>.
+        /// </summary>
+        /// <remarks>
+        /// This call blocks briefly to open the terminal session and run capability probes.
+        /// The probe timeout (default 500 ms) is configurable via Cursorial's
+        /// <c>NegotiationOptions.ProbeTimeout</c> if needed.
+        /// </remarks>
+        public static AppBuilder UseCursorialConsole(this AppBuilder builder)
+        {
+            // CursorialConsole.CreateAsync is async; block here because AppBuilder extension
+            // methods are synchronous. The session open includes capability negotiation
+            // (XTVERSION, DA1, OSC color probes) which requires awaiting terminal responses.
+            // The 5-second timeout is generous for even slow SSH links.
+            var console = CursorialConsole.CreateAsync().GetAwaiter().GetResult();
+            return builder.UseConsole(console)
+                          .UseAutoDetectClipboard()
+                          .UseAutoDetectConsoleColorMode();
         }
 
         private static bool IsWindowsTerminal()

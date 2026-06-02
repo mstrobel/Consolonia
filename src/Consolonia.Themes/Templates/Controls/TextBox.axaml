@@ -22,6 +22,8 @@
                 Value="0,0" />
         <Setter Property="ScrollViewer.IsScrollChainingEnabled"
                 Value="True" />
+        <Setter Property="Cursor"
+                Value="Ibeam" />
         <Setter Property="CaretBrush">
             <Setter.Value>
                 <console:MoveConsoleCaretToPositionBrush CaretStyle="BlinkingBar" />

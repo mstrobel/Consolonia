@@ -300,6 +300,9 @@ namespace Consolonia.Core.Drawing
         {
             if (_consoleCursor.CompareTo(consoleCursor) == 0)
                 return;
+            
+            if ((_console.Capabilities & ConsoleCapabilities.SupportsMouseCursor) == ConsoleCapabilities.SupportsMouseCursor)
+                return;
 
             ConsoleCursor oldConsoleCursor = _consoleCursor;
             _consoleCursor = consoleCursor;

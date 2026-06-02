@@ -5,6 +5,8 @@
                   TargetType="SelectableTextBlock">
         <Setter Property="SelectionBrush"
                 Value="{DynamicResource ThemeChooserBackgroundBrush}" />
+        <Setter Property="Cursor"
+                Value="Ibeam" />
         <Setter Property="console:SelectTextWithPointerUpExtension.SelectOnMouseLeftUp"
                 Value="True" />
     </ControlTheme>

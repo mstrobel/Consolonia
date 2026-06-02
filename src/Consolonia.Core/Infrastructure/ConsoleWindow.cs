@@ -92,6 +92,12 @@ namespace Consolonia.Core.Infrastructure
                 _cursorType = StandardCursorType.Arrow;
             else
                 _cursorType = ((CursorImpl)cursor).CursorType;
+
+            // Hint the cursor shape to the terminal (OSC 22 etc. on consoles that honor it).
+            // Consoles without a pointer-shape protocol implement this as a no-op via the
+            // default IConsoleOutput.SetNativeCursor implementation.
+            Console.SetNativeCursor(_cursorType);
+
             UpdateCursor();
         }
 
@@ -485,6 +491,7 @@ namespace Consolonia.Core.Infrastructure
         {
             return _cursorType switch
             {
+                _ when Console.Capabilities.HasFlag(ConsoleCapabilities.SupportsMouseCursor) => GetDefaultCursor(), 
                 StandardCursorType.Arrow => GetDefaultCursor(),
                 StandardCursorType.Cross => "+",
                 StandardCursorType.Hand => "@",

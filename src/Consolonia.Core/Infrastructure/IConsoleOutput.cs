@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Avalonia.Input;
 using Consolonia.Controls;
 using Consolonia.Core.Drawing.PixelBufferImplementation;
 
@@ -69,6 +70,8 @@ namespace Consolonia.Core.Infrastructure
         /// <param name="position">location for pixel</param>
         /// <param name="pixel">pixel to print</param>
         void WritePixel(PixelBufferCoordinate position, in Pixel pixel);
+
+        void SetNativeCursor(StandardCursorType cursorType) {}
 
         /// <summary>
         ///     Write raw text to the console

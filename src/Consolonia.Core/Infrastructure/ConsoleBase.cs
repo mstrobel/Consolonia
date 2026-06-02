@@ -178,7 +178,12 @@ namespace Consolonia.Core.Infrastructure
             _consoleOutput.WriteText(str);
         }
 
-        protected bool CheckSize()
+        public virtual void SetNativeCursor(StandardCursorType cursorType)
+        {
+            _consoleOutput.SetNativeCursor(cursorType);
+        }
+
+        protected virtual bool CheckSize()
         {
             if (Size.Width == Console.WindowWidth && Size.Height == Console.WindowHeight) return false;
             Size = new PixelBufferSize((ushort)Console.WindowWidth, (ushort)Console.WindowHeight);
