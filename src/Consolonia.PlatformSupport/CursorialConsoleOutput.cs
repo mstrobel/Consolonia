@@ -258,10 +258,6 @@ namespace Consolonia.PlatformSupport
             FlushSync();
         }
 
-        public void PauseIO(Task task)
-        {
-        }
-
         // ---- Private helpers ----
 
         private void SetCaretPositionInternal(int col, int row)
