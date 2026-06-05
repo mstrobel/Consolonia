@@ -102,6 +102,8 @@ namespace Consolonia.PlatformSupports
         {
             try
             {
+                base.PauseIO(task);
+
                 var resumeHandle = await _session.PauseIOAsync(_inputCts.Token).ConfigureAwait(false);
 
                 await task.ContinueWith(async _ =>
