@@ -74,6 +74,7 @@ namespace Consolonia.PlatformSupport
 
         public void RestoreConsole()
         {
+            WaitPauseTaskIfNecessary();
             // Undo all SGR, show cursor, leave alternate screen.
             SgrEncoder.WriteReset(_writer);
             CursorWriter.WriteShow(_writer);
@@ -83,6 +84,7 @@ namespace Consolonia.PlatformSupport
 
         public void ClearScreen()
         {
+            WaitPauseTaskIfNecessary();
             SgrEncoder.WriteReset(_writer);
             _currentStyle = CursorialStyle.Default;
             ScreenWriter.WriteClearScreen(_writer);
@@ -94,6 +96,7 @@ namespace Consolonia.PlatformSupport
 
         public void SetTitle(string title)
         {
+            WaitPauseTaskIfNecessary();
             WindowWriter.WriteTitle(_writer, title.AsSpan());
             FlushSync();
         }
@@ -101,6 +104,7 @@ namespace Consolonia.PlatformSupport
         public void SetCaretPosition(PixelBufferCoordinate bufferPoint)
         {
             if (bufferPoint.X == _headCol && bufferPoint.Y == _headRow) return;
+            WaitPauseTaskIfNecessary();
             SetCaretPositionInternal(bufferPoint.X, bufferPoint.Y);
         }
 
@@ -121,17 +125,20 @@ namespace Consolonia.PlatformSupport
                 CaretStyle.SteadyBar => CursorShape.SteadyBar,
                 _ => CursorShape.Default
             };
+            WaitPauseTaskIfNecessary();
             CursorWriter.WriteShape(_writer, shape);
         }
 
         public void HideCaret()
         {
+            WaitPauseTaskIfNecessary();
             CursorWriter.WriteHide(_writer);
             FlushSync();
         }
 
         public void ShowCaret()
         {
+            WaitPauseTaskIfNecessary();
             CursorWriter.WriteShow(_writer);
             FlushSync();
         }
@@ -139,6 +146,8 @@ namespace Consolonia.PlatformSupport
         public void WritePixel(PixelBufferCoordinate position, in Pixel pixel)
         {
             if (pixel.Width <= 0) return;
+
+            WaitPauseTaskIfNecessary();
 
             // Move cursor to the pixel position if needed.
             if (position.X != _headCol || position.Y != _headRow)
@@ -232,6 +241,8 @@ namespace Consolonia.PlatformSupport
                     _ => MouseCursorShape.Default
                 };
            
+            WaitPauseTaskIfNecessary();
+
             if (_pushedCursor is {} existingCursor)
             {
                 if (shape == existingCursor)
